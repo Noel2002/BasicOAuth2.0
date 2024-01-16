@@ -12,5 +12,7 @@ router.get("/:id", clientController.getById.bind(clientController));
 
 router.delete("/", clientController.delete.bind(clientController));
 
+router.patch("/:id/privileges/adding", clientController.addPrivileges.bind(clientController));
+
 
 export default router;

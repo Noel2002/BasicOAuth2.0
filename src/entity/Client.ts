@@ -1,4 +1,5 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Privilege } from "./Privilege";
 
 @Entity()
 export class Client {
@@ -6,9 +7,16 @@ export class Client {
     id: string;
 
     @Column()
-    client_secret: string;
+    clientSecret: string;
 
     @Column({unique:true})
     name: string;
+
+    @Column()
+    redirectUrl: string;
+
+    @ManyToMany(()=> Privilege)
+    @JoinTable()
+    privileges: Privilege[]
 
 }
