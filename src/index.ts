@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
 import userRoutes from './routes/user.routes';
 import clientRoutes from './routes/client.routes';
+import privilegeRoutes from './routes/privilege.routes';
 
 // create express app
 const app = express();
@@ -25,6 +26,7 @@ app.get('/', (req: Request, res: Response)=>{
 
 app.use('/users', userRoutes);
 app.use("/clients", clientRoutes);
+app.use("/privileges", privilegeRoutes);
 
 // start express server
 const port = process.env.PORT || 8000;
