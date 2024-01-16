@@ -3,6 +3,7 @@ import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
 import userRoutes from './routes/user.routes';
+import clientRoutes from './routes/client.routes';
 
 // create express app
 const app = express();
@@ -13,6 +14,7 @@ AppDataSource.initialize().then(() => {
     
 }).catch(error => {
     console.error("Failed to initialize datasource");
+    console.error(error.message);    
     process.exit(1);
 });
 
@@ -22,6 +24,7 @@ app.get('/', (req: Request, res: Response)=>{
 });
 
 app.use('/users', userRoutes);
+app.use("/clients", clientRoutes);
 
 // start express server
 const port = process.env.PORT || 8000;
