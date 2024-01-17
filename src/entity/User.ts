@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, Index } from "typeorm";
 import {hash} from 'bcrypt';
 
 @Entity()
@@ -7,7 +7,8 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({unique: true})
+    @Index({unique: true})
+    @Column()
     email: string;
 
     @Column()

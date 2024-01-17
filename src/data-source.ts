@@ -4,6 +4,7 @@ import { User } from "./entity/User";
 import {config} from "dotenv";
 import { Client } from "./entity/Client";
 import { Privilege } from "./entity/Privilege";
+import { AuthorizationCode } from "./entity/AuthorizationCode";
 
 // dotenv configuration
 config();
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME,
     synchronize: true,
     logging: false,
-    entities: [User, Client, Privilege],
+    entities: [User, Client, Privilege, AuthorizationCode],
     migrations: [],
     subscribers: [],
 })

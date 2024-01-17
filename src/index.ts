@@ -5,6 +5,9 @@ import { AppDataSource } from "./data-source";
 import userRoutes from './routes/user.routes';
 import clientRoutes from './routes/client.routes';
 import privilegeRoutes from './routes/privilege.routes';
+import authorizationRoutes from './routes/authiorization.routes';
+
+import path = require("path");
 
 // create express app
 const app = express();
@@ -19,6 +22,7 @@ AppDataSource.initialize().then(() => {
     process.exit(1);
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response)=>{
     res.send("Welcome to Basic OAuth")
@@ -27,6 +31,7 @@ app.get('/', (req: Request, res: Response)=>{
 app.use('/users', userRoutes);
 app.use("/clients", clientRoutes);
 app.use("/privileges", privilegeRoutes);
+app.use("/auth", authorizationRoutes);
 
 // start express server
 const port = process.env.PORT || 8000;
