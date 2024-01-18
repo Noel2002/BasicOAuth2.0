@@ -5,6 +5,9 @@ import { AuthorizationCode } from '../entity/AuthorizationCode';
 import {stringify}  from 'node:querystring'
 import { UserService } from '../services/User.service';
 import { Client } from '../entity/Client';
+import {sign} from 'jsonwebtoken';
+import { privateKey } from '../config';
+
 export class AuthorizationController {
     private _authorizationCodeRepository = AppDataSource.getRepository(AuthorizationCode);
     private _userService = new UserService();
@@ -51,5 +54,55 @@ export class AuthorizationController {
             console.log(error.message);
             response.status(500).send(error.message);
         }
+    }
+
+    async createToken(request: Request, response: Response){
+        try {
+            const {grant_type, code, client_id, client_secret, redirect_uri, state} = request.body;
+    
+            const client = await this._clientRepository.findOne({where: {id: client_id}});
+            if(!client) return response.status(400).send("Invalid client id!");
+    
+            const authCode = await this._authorizationCodeRepository.findOne({where: {code: code}, relations: {user: true}});
+            if(!authCode) return response.status(400).send('Invalid authorization code');
+    
+            if(grant_type !== 'authorization_code') return response.status(400).send("invalid grant_type");
+    
+            if(redirect_uri !== client.redirectUrl) return response.status(400).send("Redirect URI does not match the registered URI.");
+    
+            if(state !== authCode.state) return response.status(400).send("State variable does not match initial value");
+    
+            if(client_secret !== client.clientSecret) return response.status(400).send("Invalid client_secret");
+    
+            /** token expires in 24 hours */
+            const expiresAt = Math.floor(Date.now()/1000 + (24*60*60));
+            const payload = {
+                'iss': process.env.ISSUER_URL,
+                'exp': expiresAt,
+                'aud': 'resource_server',   
+                'sub': authCode.user.id,
+                'client_id':client.id,
+                'iat': Date.now(),
+                'jti': randomBytes(16).toString('hex'),
+                'scope': authCode.scope,
+            }            
+            const accesstoken = sign(payload, privateKey, {algorithm: 'RS256'});
+
+            // destroy the code
+            await this._authorizationCodeRepository.remove(authCode);
+
+            return response.status(200).json({
+                access_token: accesstoken,
+                token_type: 'Bearer',
+                expiresAt,
+                scope: authCode.scope
+            });
+        } catch (error) {
+            console.error(error);
+            return response.status(500).send(error.message);
+        }
+
+
+
     }
 }

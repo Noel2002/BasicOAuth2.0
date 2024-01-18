@@ -9,5 +9,7 @@ router.get('/authorize', authorizationController.authorize.bind(authorizationCon
 
 router.post('/authenticate', authorizationController.authenticate.bind(authorizationController));
 
+router.post('/token', authorizationController.createToken.bind(authorizationController));
+
 
 export default router;
