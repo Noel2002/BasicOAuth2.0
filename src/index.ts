@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
+import cors = require('cors');
 import { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
 import userRoutes from './routes/user.routes';
@@ -22,6 +23,7 @@ AppDataSource.initialize().then(() => {
     process.exit(1);
 });
 
+app.use(cors<Request>())
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response)=>{
