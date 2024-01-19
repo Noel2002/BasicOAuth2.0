@@ -3,16 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./dialog.css">
     <title>Login</title>
 </head>
 <body>
-    <div id="form">
-        <input type="email" name="email" id="email" />
-        <input type="password" name="password" id="password" />
-        <button onclick="login()">Login</button>
-    </div>
-    <div>
-        <button onclick="approve()">approve</button>
+    <div class="container">
+        <div class="dialog-box hide" id="login-box">
+            <div class="logo-box">
+                <img src="./LOGO.png" alt="logo" class="logo" />
+            </div>
+            <p class="title">Sign in</p>
+            <p class="subtitle">Use your AuthZilla account to provide access to third party apps</p>
+            <div class="form-inputs">
+                <input placeholder="Email or username" type="email" name="email" id="email" class="input"/>
+                <input placeholder="Password" type="password" name="password" id="password" class="'input"/>
+            </div>
+            <button class="login-btn" onclick="login()">Sign in</button>
+        </div>
+        <div class="dialog-box">
+            <div class="logo-box">
+                <img src="./LOGO.png" alt="logo" class="logo" />
+            </div>
+            <p class="prompt-subtitle">Authorize <span class="client-name">Clientname</span> to connect to AuthZilla</p>
+            <p class="scope-list-title"><span class="client-name">clientname</span> will be able to:</p>
+            <ul class="scope-list">
+                <li>
+                    <img src="./check.png" alt="checkbox" class="checkbox" />
+                    <span>Edit files</span>
+                </li>
+            </ul>
+            <button class="login-btn" onclick="approve()">approve</button>
+        </div>
+        <div>
+        </div>
     </div>
     <script src="./dialog.js"></script>
 </body>
