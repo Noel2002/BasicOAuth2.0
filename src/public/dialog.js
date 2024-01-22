@@ -10,6 +10,9 @@ const state = params.get("state");
 const emailBox = document.getElementById("email");
 const passwordBox = document.getElementById("password");
 
+const loginBox = document.getElementById('login-box');
+const approveBox = document.getElementById('approve-box');
+
 const login = async()=>{
     try {
         // const email = emailBox.value;
@@ -36,6 +39,8 @@ const login = async()=>{
         const data = await res.json();
         console.log(data);
         code = data.code
+        loginBox.classList.toggle('hide');
+        approveBox.classList.toggle('hide');
     } catch (error) {
         console.log(error);
     }
@@ -43,5 +48,5 @@ const login = async()=>{
 }
 
 const approve = ()=>{
-    window.location.replace(`${redirect_uri}?code=${code}`);
+    window.location.replace(`${redirect_uri}?code=${code}&state=${state}&redirect_uri=${redirect_uri}`);
 }
