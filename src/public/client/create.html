@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./../dialog.css">
+    <title>Create client</title>
+</head>
+<body>
+    <div class="container">
+        <div class="dialog-box" id="create-box">
+            <div class="logo-box">
+                <img src="./../LOGO.png" alt="logo" class="logo" />
+            </div>
+            <p class="title">Create client</p>
+            <p class="subtitle">Create AuthZilla client for your application to get access to resources</p>
+            <div class="form-inputs">
+                <input placeholder="Enter client name" type="text" name="name" id="name" />
+                <input placeholder="Enter the redirect URI" type="text" name="redirectUrl" id="redirectUrl">
+            </div>
+            <button class="btn-full login-btn" onclick="createClient()">Create client</button>
+        </div>
+        <div class="hide" id="response-box">
+            <div class="logo-box">
+                <img src="./../LOGO.png" alt="logo" class="logo" />
+            </div>
+            <p><b>Client ID:</b></p>
+            <p id="client-id"></p>
+            <p><b>Client Secret:</b></p>
+            <p id="client-secret"></p>
+        </div>
+    </div>
+    <script src="./create.js"></script>
+</body>
+</html>
