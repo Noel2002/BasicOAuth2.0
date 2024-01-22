@@ -7,11 +7,13 @@ import { UserService } from '../services/User.service';
 import { Client } from '../entity/Client';
 import {sign} from 'jsonwebtoken';
 import { privateKey } from '../config';
+import { PrivilegeService } from '../services/Privilege.service';
 
 export class AuthorizationController {
     private _authorizationCodeRepository = AppDataSource.getRepository(AuthorizationCode);
     private _userService = new UserService();
     private _clientRepository = AppDataSource.getRepository(Client);
+    private _privelegeService = new PrivilegeService();
 
     async authorize(request: Request, response: Response){
         try {
@@ -47,9 +49,14 @@ export class AuthorizationController {
                 state: state,
                 user,
             });
-    
+            
+            // retrieve the privileges from the scopes
+            const tags = scope.split("+");
+            const privileges = await this._privelegeService.getPrivilegesFromScopes(tags);
+
+            // create authcode
             const authCode = await this._authorizationCodeRepository.save(obj);
-            return response.status(201).json({...authCode})
+            return response.status(201).json({...authCode, privileges})
         } catch (error) {
             console.log(error.message);
             response.status(500).send(error.message);
