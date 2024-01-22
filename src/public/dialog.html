@@ -18,7 +18,7 @@
                 <input placeholder="Email or username" type="email" name="email" id="email" class="input"/>
                 <input placeholder="Password" type="password" name="password" id="password" class="'input"/>
             </div>
-            <button class="login-btn" onclick="login()">Sign in</button>
+            <button class="btn-full login-btn" onclick="login()">Sign in</button>
         </div>
         <div class="dialog-box hide" id="approve-box">
             <div class="logo-box">
@@ -26,13 +26,20 @@
             </div>
             <p class="prompt-subtitle">Authorize <span class="client-name">Clientname</span> to connect to AuthZilla</p>
             <p class="scope-list-title"><span class="client-name">clientname</span> will be able to:</p>
-            <ul class="scope-list">
-                <li>
-                    <img src="./check.png" alt="checkbox" class="checkbox" />
-                    <span>Edit files</span>
-                </li>
+            <ul class="scope-list" id="scope-list">
+                <!-- There contents are going to be dynamical filled -->
+                <!-- 
+                    Sample:
+                    <li>
+                        <img src="./check.png" alt="checkbox" class="checkbox" />
+                        <span>${privilege.description}</span>
+                    </li>
+                 -->
             </ul>
-            <button class="login-btn" onclick="approve()">approve</button>
+            <div class="actions">
+                <button class="btn-full login-btn" onclick="approve()">approve</button>
+                <button class="btn-full cancel-btn">cancel</button>
+            </div>
         </div>
         <div>
         </div>

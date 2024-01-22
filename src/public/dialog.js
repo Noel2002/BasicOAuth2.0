@@ -12,6 +12,7 @@ const passwordBox = document.getElementById("password");
 
 const loginBox = document.getElementById('login-box');
 const approveBox = document.getElementById('approve-box');
+const scopeList = document.getElementById("scope-list");
 
 const login = async()=>{
     try {
@@ -38,10 +39,20 @@ const login = async()=>{
     
         const data = await res.json();
         console.log(data);
-        code = data.code
+        code = data.code;
+        const privileges = data.privileges;
+        privileges.map(privilege=>{
+            const item = document.createElement('li');
+            item.innerHTML = `
+                    <img src="./check.png" alt="checkbox" class="checkbox" />
+                    <span>${privilege.description}</span>
+            `;
+            scopeList.append(item);
+        });
         loginBox.classList.toggle('hide');
         approveBox.classList.toggle('hide');
     } catch (error) {
+        alert(error.message);
         console.log(error);
     }
     
