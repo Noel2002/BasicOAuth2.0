@@ -32,10 +32,10 @@ export class AuthorizationController {
         try {            
             const { client_id, redirect_uri, scope, state, email, password} = request.body;
             const user = await this._userService.login(email, password);
-            if(!user) return response.sendStatus(401);
+            if(!user) return response.status(401).json({error: "Unauthorized"});
 
             const client = await this._clientRepository.findOne({where: {id: client_id}});
-            if(!client) return response.status(400).send("Client cannot be found");
+            if(!client) return response.status(400).json({error: "Client cannot be found"});
 
             let code = randomBytes(16).toString('hex');
             while(await this._authorizationCodeRepository.existsBy({code})){
@@ -59,7 +59,7 @@ export class AuthorizationController {
             return response.status(201).json({...authCode, privileges})
         } catch (error) {
             console.log(error.message);
-            response.status(500).send(error.message);
+            response.status(500).json({error: error.message});
         }
     }
 
@@ -68,18 +68,18 @@ export class AuthorizationController {
             const {grant_type, code, client_id, client_secret, redirect_uri, state} = request.body;
     
             const client = await this._clientRepository.findOne({where: {id: client_id}});
-            if(!client) return response.status(400).send("Invalid client id!");
+            if(!client) return response.status(400).json({error: "Invalid client id!"});
     
             const authCode = await this._authorizationCodeRepository.findOne({where: {code: code}, relations: {user: true}});
-            if(!authCode) return response.status(400).send('Invalid authorization code');
+            if(!authCode) return response.status(400).json({error: 'Invalid authorization code'});
     
-            if(grant_type !== 'authorization_code') return response.status(400).send("invalid grant_type");
+            if(grant_type !== 'authorization_code') return response.status(400).json({error: "invalid grant_type"});
     
-            if(redirect_uri !== client.redirectUrl) return response.status(400).send("Redirect URI does not match the registered URI.");
+            if(redirect_uri !== client.redirectUrl) return response.status(400).json({error: "Redirect URI does not match the registered URI."});
     
-            if(state !== authCode.state) return response.status(400).send("State variable does not match initial value");
+            if(state !== authCode.state) return response.status(400).json({error: "State variable does not match initial value"});
     
-            if(client_secret !== client.clientSecret) return response.status(400).send("Invalid client_secret");
+            if(client_secret !== client.clientSecret) return response.status(400).json({error: "Invalid client_secret"});
     
             /** token expires in 24 hours */
             const expiresAt = Math.floor(Date.now()/1000 + (24*60*60));
@@ -106,7 +106,7 @@ export class AuthorizationController {
             });
         } catch (error) {
             console.error(error);
-            return response.status(500).send(error.message);
+            return response.status(500).json({error: error.message});
         }
 
 

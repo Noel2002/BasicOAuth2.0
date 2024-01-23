@@ -13,7 +13,7 @@ export class PrivilegeController {
             const privilege = await this._privilegeRepository.save(obj);
             return response.status(201).json({privilege});
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({error:error.message});
         }
     }
 
@@ -31,11 +31,11 @@ export class PrivilegeController {
             const id = request.params.id;
             const privilege = await this._privilegeRepository.findOne({where: {id}});
 
-            if(!privilege) return response.sendStatus(404);
+            if(!privilege) return response.status(404).json({error: "Privilege not found!"});
 
             return response.status(200).json({privilege});
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({error:error.message});
         }
     }
     async delete(request: Request, response: Response){
@@ -46,7 +46,7 @@ export class PrivilegeController {
             await this._privilegeRepository.remove(privilege);
             return response.status(200).send("Privilege deleted successfully!");
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({error:error.message});
         }
     }
 

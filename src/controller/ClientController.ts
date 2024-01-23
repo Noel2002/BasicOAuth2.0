@@ -18,7 +18,7 @@ export class ClientController {
             const client = await this._clientRepository.save(obj);
             return response.status(201).json({client});
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({message: error.message});
         }
     }
 
@@ -36,22 +36,22 @@ export class ClientController {
             const id = request.params.id;
             const client = await this._clientRepository.findOne({where: {id}});
 
-            if(!client) return response.sendStatus(404);
+            if(!client) return response.status(404).json({error: "Client not found"});
 
             return response.status(200).json({client});
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({message: error.message});
         }
     }
     async delete(request: Request, response: Response){
         try {
             const id = request.params.id;
             const client = await this._clientRepository.findOne({where:{id}});
-            if(!client) return response.sendStatus(404);
+            if(!client) return response.status(404).json({error: "Client does not exist!"});
             await this._clientRepository.remove(client);
             return response.status(200).send("Client deleted successfully!");
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({message: error.message});
         }
     }
 
@@ -59,7 +59,7 @@ export class ClientController {
         try {
             const id = request.params.id;
             const client = await this._clientRepository.findOne({where:{id}, relations: {privileges: true}});
-            if(!client) return response.sendStatus(404);
+            if(!client) return response.status(404).json({error: "Client does not exist"});
 
             const scopes = request.body.scopes;
 
@@ -71,7 +71,7 @@ export class ClientController {
             return response.status(201).json({client: newClient});
 
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({message: error.message});
         }
     }
 

@@ -51,13 +51,13 @@ export class UserController {
             const userToRemove = await this.userRepository.findOneBy({ id });
     
             if (!userToRemove) {
-                return response.sendStatus(404);
+                return response.status(404).json({error: "User does not exist!"});
             }
     
             await this.userRepository.remove(userToRemove);
             response.status(200).send("user deleted successfully");
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({error: error.message});
         }
 
     }
