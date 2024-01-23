@@ -38,9 +38,9 @@ export class UserController {
             });
     
             await this.userRepository.save(user);
-            response.status(201).send("User created successfully");
+            response.status(201).json({message:"User created successfully"});
         } catch (error) {
-            response.status(500).send(error.message);
+            response.status(500).json({error: error.message});
         }
     }
 
