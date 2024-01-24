@@ -16,10 +16,8 @@ const scopeList = document.getElementById("scope-list");
 
 const login = async()=>{
     try {
-        // const email = emailBox.value;
-        // const password = passwordBox.value;
-        const email = "john@doe.com";
-        const password = "password123";
+        const email = emailBox.value;
+        const password = passwordBox.value;
         const body = {
             client_id,
             redirect_uri,
@@ -38,6 +36,8 @@ const login = async()=>{
         });
     
         const data = await res.json();
+        if(data.error) return alert(data.error);
+
         console.log(data);
         code = data.code;
         const privileges = data.privileges;
@@ -60,4 +60,10 @@ const login = async()=>{
 
 const approve = ()=>{
     window.location.replace(`${redirect_uri}?code=${code}&state=${state}&redirect_uri=${redirect_uri}`);
+}
+const cancel = ()=>{
+    const params = new URLSearchParams({
+        error: "access_denied"
+    });
+    window.location.replace(`${redirect_uri}?${params.toString()}`);
 }

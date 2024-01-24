@@ -14,4 +14,11 @@ export class PrivilegeService {
         }));
         return privileges;
     }
+    async validateScopes(scopes: string[]) : Promise<boolean>{
+        for(const scope of scopes){
+            const privilege = await this._privilegeRepository.findOne({where:{scope}});
+            if(!privilege) return false;
+        }
+        return true;
+    }
 }

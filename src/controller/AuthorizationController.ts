@@ -17,6 +17,52 @@ export class AuthorizationController {
 
     async authorize(request: Request, response: Response){
         try {
+            const {client_id, scope, redirect_uri, state, type} = request.query;
+            let errorResponse: {error: string, message: string} = {
+                error: null,
+                message: null
+            };
+
+            const client = await this._clientRepository.findOne({where: {id: client_id}});
+            
+            if(!client){
+                errorResponse.error = "unrecognized_client_id";
+                errorResponse.message = "Client does not exist. Please check if you provided a correct ID";
+                response.writeHead(302, {
+                    Location: `http://localhost:8000/error.html?${stringify(errorResponse)}`
+                });
+                return response.end();
+            }
+            
+            if(client.redirectUrl !== redirect_uri){
+                errorResponse.error = "";
+                errorResponse.message = "The redirect URL does not match with the one client registered";
+                response.writeHead(302, {
+                    Location: `http://localhost:8000/error.html?${stringify(errorResponse)}`
+                });
+                return response.end();
+            }
+            
+            if(type !== "code"){
+                errorResponse.error = "unsupported_response_type";
+                errorResponse.message = `Authorization server does not support the response type -${type} prodivded. Server only supports "code"`;
+                response.writeHead(302, {
+                    Location: `${redirect_uri}?${stringify(errorResponse)}`
+                });
+                return response.end();
+            }
+
+            const scopes = scope.split("+");            
+            const isScopesValid = await this._privelegeService.validateScopes(scopes);
+            if(!isScopesValid){
+                errorResponse.error = "invalid_scope";
+                errorResponse.message = "The scope provided is not valid and supported by the authorization server";
+                response.writeHead(302, {
+                    Location: `${redirect_uri}?${stringify(errorResponse)}`
+                });
+                return response.end();
+            }
+
             const queryString = stringify(request.query);
             response.writeHead(302, {
                 Location: `http://localhost:8000/dialog.html?${queryString}`
@@ -24,7 +70,8 @@ export class AuthorizationController {
             return response.end();
           
         } catch (error) {
-            return response.status(500).send(error.message);
+            console.log(error.message);            
+            return response.status(500).json({error: error.message});
         }
     }
 
@@ -32,7 +79,7 @@ export class AuthorizationController {
         try {            
             const { client_id, redirect_uri, scope, state, email, password} = request.body;
             const user = await this._userService.login(email, password);
-            if(!user) return response.status(401).json({error: "Unauthorized"});
+            if(!user) return response.status(401).json({error: "Unauthorized! Invalid email or passoword"});
 
             const client = await this._clientRepository.findOne({where: {id: client_id}});
             if(!client) return response.status(400).json({error: "Client cannot be found"});
