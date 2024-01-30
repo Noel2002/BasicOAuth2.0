@@ -18,7 +18,7 @@ export class AuthorizationController {
 
     async authorize(request: Request, response: Response){
         try {
-            const {client_id, scope, redirect_uri, state, type} = request.query;
+            const {client_id, scope, redirect_uri, response_type} = request.query;
             let errorResponse: {error: string, message: string} = {
                 error: null,
                 message: null
@@ -44,9 +44,9 @@ export class AuthorizationController {
                 return response.end();
             }
             
-            if(type !== "code"){
+            if(response_type !== "code"){
                 errorResponse.error = "unsupported_response_type";
-                errorResponse.message = `Authorization server does not support the response type -${type} prodivded. Server only supports "code"`;
+                errorResponse.message = `Authorization server does not support the response type -${response_type} prodivded. Server only supports "code"`;
                 response.writeHead(302, {
                     Location: `${redirect_uri}?${stringify(errorResponse)}`
                 });
@@ -114,7 +114,8 @@ export class AuthorizationController {
     async createToken(request: Request, response: Response){
         try {
             const {grant_type, code, client_id, client_secret, redirect_uri, state} = request.body;
-    
+            console.log(request.body);
+
             const client = await this._clientRepository.findOne({where: {id: client_id}});
             if(!client) return response.status(400).json({error: "Invalid client id!"});
     
@@ -125,16 +126,16 @@ export class AuthorizationController {
     
             if(redirect_uri !== client.redirectUrl) return response.status(400).json({error: "Redirect URI does not match the registered URI."});
     
-            if(state !== authCode.state) return response.status(400).json({error: "State variable does not match initial value"});
+            // if(state !== authCode.state) return response.status(400).json({error: "State variable does not match initial value"});
     
-            if(client_secret !== client.clientSecret) return response.status(400).json({error: "Invalid client_secret"});
+            // if(client_secret !== client.clientSecret) return response.status(400).json({error: "Invalid client_secret"});
     
             /** token expires in 24 hours */
             const expiresAt = Math.floor(Date.now()/1000 + (24*60*60));
             const payload: AccessTokenPayload = {
                 'iss': process.env.ISSUER_URL,
                 'exp': expiresAt,
-                'aud': 'resource_server',   
+                'aud': 'resource_server',
                 'sub': authCode.user.id,
                 'client_id':client.id,
                 'iat': Date.now(),
