@@ -8,6 +8,7 @@ import { Client } from '../entity/Client';
 import {sign} from 'jsonwebtoken';
 import { privateKey } from '../config';
 import { PrivilegeService } from '../services/Privilege.service';
+import { AccessTokenPayload } from '../types/token';
 
 export class AuthorizationController {
     private _authorizationCodeRepository = AppDataSource.getRepository(AuthorizationCode);
@@ -130,7 +131,7 @@ export class AuthorizationController {
     
             /** token expires in 24 hours */
             const expiresAt = Math.floor(Date.now()/1000 + (24*60*60));
-            const payload = {
+            const payload: AccessTokenPayload = {
                 'iss': process.env.ISSUER_URL,
                 'exp': expiresAt,
                 'aud': 'resource_server',   

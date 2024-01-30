@@ -2,6 +2,9 @@ import { AppDataSource } from "../data-source"
 import { NextFunction, Request, Response } from "express"
 import { User } from "../entity/User";
 import bcrypt from 'bcryptjs';
+import {JwtPayload, verify} from 'jsonwebtoken';
+import { publicKey } from "../config";
+import { AccessTokenPayload } from "../types/token";
 
 
 export class UserController {
@@ -60,6 +63,30 @@ export class UserController {
             response.status(500).json({error: error.message});
         }
 
+    }
+
+    async getUserInfo(request: Request, response: Response){
+        const authorization = request.headers.authorization;
+        if(!authorization){
+            return response.status(401).json({error: "Missing authorization token header"});
+        }
+        const [_, token] = authorization.split(" ");
+        let payload: AccessTokenPayload;
+        let error;
+        verify(token, publicKey, function(err, decoded){
+            if(err){
+                error = err;
+                return;
+            }
+            payload = decoded;
+        });
+
+        if(error) return response.status(401).json({error});
+        
+        const user = await this.userRepository.findOne({where: {id: payload.sub}});
+        if(!user) return response.status(404).json({error: "User not found!"});
+        
+        return response.status(200).json(user);
     }
 
 }

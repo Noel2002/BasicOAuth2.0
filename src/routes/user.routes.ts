@@ -12,5 +12,7 @@ router.post("/", userController.create.bind(userController));
 
 router.delete("/:id", userController.delete.bind(userController));
 
+router.get("/userInfo", userController.getUserInfo.bind(userController));
+
 
 export default router;
