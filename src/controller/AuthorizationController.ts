@@ -113,8 +113,19 @@ export class AuthorizationController {
 
     async createToken(request: Request, response: Response){
         try {
-            const {grant_type, code, client_id, client_secret, redirect_uri, state} = request.body;
-            console.log(request.body);
+            const {grant_type, code, client_id, redirect_uri} = request.body;
+            
+            const authorizationHeader = request.headers.authorization;
+            if(!authorizationHeader) return response.status(400).json({error: "Missing authorizaiton header"});
+            
+            const authvals = authorizationHeader.split(" ");
+            if(authvals.length < 2) return response.status(400).json('Invalid authorization header format. Format: Basic <base64>')
+            
+            const token = Buffer.from(authvals[1], 'base64').toString();            
+            const credentials = token.split(":");
+            if(credentials.length<2) return response.status(400).json("Invalid Basic auth credentials. Credentials should be separeted by a colon':'");
+            
+            const client_secret = credentials[1]; // retrieving client secret from the authorization header credentials
 
             const client = await this._clientRepository.findOne({where: {id: client_id}});
             if(!client) return response.status(400).json({error: "Invalid client id!"});
@@ -125,10 +136,8 @@ export class AuthorizationController {
             if(grant_type !== 'authorization_code') return response.status(400).json({error: "invalid grant_type"});
     
             if(redirect_uri !== client.redirectUrl) return response.status(400).json({error: "Redirect URI does not match the registered URI."});
-    
-            // if(state !== authCode.state) return response.status(400).json({error: "State variable does not match initial value"});
-    
-            // if(client_secret !== client.clientSecret) return response.status(400).json({error: "Invalid client_secret"});
+        
+            if(client_secret !== client.clientSecret) return response.status(400).json({error: "Invalid client_secret"});
     
             /** token expires in 24 hours */
             const expiresAt = Math.floor(Date.now()/1000 + (24*60*60));
