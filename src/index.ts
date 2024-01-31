@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as morgan from 'morgan';
+import * as cookieParser from 'cookie-parser';
 import cors = require('cors');
 import { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
@@ -28,6 +29,7 @@ app.use(cors<Request>());
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.get('/', (req: Request, res: Response)=>{
     res.send("Welcome to Basic OAuth")
