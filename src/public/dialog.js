@@ -41,6 +41,7 @@ const login = async()=>{
         console.log(data);
         code = data.code;
         const privileges = data.privileges;
+        const client = data.client;
         privileges.map(privilege=>{
             const item = document.createElement('li');
             item.innerHTML = `
@@ -49,6 +50,11 @@ const login = async()=>{
             `;
             scopeList.append(item);
         });
+        const clientNameElements = document.getElementsByClassName('client-name');
+        for(let i=0; i<clientNameElements.length; i++){
+            clientNameElements[i].innerText = client.name;
+        }
+        
         loginBox.classList.toggle('hide');
         approveBox.classList.toggle('hide');
     } catch (error) {

@@ -53,7 +53,7 @@ export class AuthorizationController {
                 return response.end();
             }
 
-            const scopes = scope.split("+");            
+            const scopes = scope.split(" ");            
             const isScopesValid = await this._privelegeService.validateScopes(scopes);
             if(!isScopesValid){
                 errorResponse.error = "invalid_scope";
@@ -99,12 +99,12 @@ export class AuthorizationController {
             });
             
             // retrieve the privileges from the scopes
-            const tags = scope.split("+");
+            const tags = scope.split(" ");
             const privileges = await this._privelegeService.getPrivilegesFromScopes(tags);
 
             // create authcode
             const authCode = await this._authorizationCodeRepository.save(obj);
-            return response.status(201).json({...authCode, privileges})
+            return response.status(201).json({...authCode, privileges, client: {name: client.name}})
         } catch (error) {
             console.log(error.message);
             response.status(500).json({error: error.message});
@@ -113,7 +113,7 @@ export class AuthorizationController {
 
     async createToken(request: Request, response: Response){
         try {
-            const {grant_type, code, client_id, redirect_uri} = request.body;
+            const {grant_type, code, redirect_uri} = request.body;
             
             const authorizationHeader = request.headers.authorization;
             if(!authorizationHeader) return response.status(400).json({error: "Missing authorizaiton header"});
@@ -121,22 +121,25 @@ export class AuthorizationController {
             const authvals = authorizationHeader.split(" ");
             if(authvals.length < 2) return response.status(400).json('Invalid authorization header format. Format: Basic <base64>')
             
-            const token = Buffer.from(authvals[1], 'base64').toString();            
+            const token = Buffer.from(authvals[1], 'base64').toString();
+            
             const credentials = token.split(":");
             if(credentials.length<2) return response.status(400).json("Invalid Basic auth credentials. Credentials should be separeted by a colon':'");
             
+            const client_id = credentials[0];
             const client_secret = credentials[1]; // retrieving client secret from the authorization header credentials
-
             const client = await this._clientRepository.findOne({where: {id: client_id}});
             if(!client) return response.status(400).json({error: "Invalid client id!"});
-    
+            // console.log({client, body: request.body});
+            
             const authCode = await this._authorizationCodeRepository.findOne({where: {code: code}, relations: {user: true}});
             if(!authCode) return response.status(400).json({error: 'Invalid authorization code'});
-    
+            
             if(grant_type !== 'authorization_code') return response.status(400).json({error: "invalid grant_type"});
-    
+            
             if(redirect_uri !== client.redirectUrl) return response.status(400).json({error: "Redirect URI does not match the registered URI."});
-        
+            
+            // console.log({client_secret, client: client.clientSecret, judge: client_secret === client.clientSecret});
             if(client_secret !== client.clientSecret) return response.status(400).json({error: "Invalid client_secret"});
     
             /** token expires in 24 hours */

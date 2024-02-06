@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./tailwind/output.css">
     <link rel="stylesheet" href="./dialog.css">
     <title>Login</title>
 </head>
 <body>
-    <div class="container">
+    <div class="min-h-screen flex flex-col justify-center items-center m-auto">
         <div class="dialog-box" id="login-box">
             <div class="logo-box">
                 <img src="./LOGO.png" alt="logo" class="logo" />
@@ -26,7 +27,7 @@
             </div>
             <p class="prompt-subtitle">Authorize <span class="client-name">Clientname</span> to connect to AuthZilla</p>
             <p class="scope-list-title"><span class="client-name">clientname</span> will be able to:</p>
-            <ul class="scope-list" id="scope-list">
+            <ul class="scope-list flex flex-col gap-4" id="scope-list">
                 <!-- There contents are going to be dynamical filled -->
                 <!-- 
                     Sample:
