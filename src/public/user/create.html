@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./../dialog.css">
+    <title>Create client</title>
+</head>
+<body>
+    <div class="container">
+        <div class="dialog-box" id="create-box">
+            <div class="logo-box">
+                <img src="./../LOGO.png" alt="logo" class="logo" />
+            </div>
+            <p class="title">Create account</p>
+            <p class="subtitle">Create an account on AuthZilla</p>
+            <div class="form-inputs">
+                <input placeholder="Enter email" type="email" name="email" id="email" />
+                <input placeholder="Enter first name" type="text" name="firstName" id="firstName">
+                <input placeholder="Enter last name" type="text" name="lastName" id="lastName">
+                <input placeholder="Enter age" type="number" name="age" id="age">
+                <input placeholder="Enter password" type="password" name="password" id="password" autocomplete="new-password">
+            </div>
+            <button class="btn-full login-btn" onclick="createUser()">Create account</button>
+        </div>
+        <div class="hide" id="response-box">
+            <div class="logo-box">
+                <img src="./../LOGO.png" alt="logo" class="logo" />
+            </div>
+            <p>Account created succesfully!</p>
+        </div>
+    </div>
+    <script src="./create.js"></script>
+</body>
+</html>
